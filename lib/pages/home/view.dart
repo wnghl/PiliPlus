@@ -34,43 +34,32 @@ class _HomePageState extends State<HomePage>
     final theme = Theme.of(context);
     return Column(
       children: [
+        // 保留搜索框和用户信息区域
         if (!_homeController.useSideBar &&
             MediaQuery.sizeOf(context).isPortrait)
           customAppBar(theme),
-        if (_homeController.tabs.length > 1)
-          Material(
-            color: theme.colorScheme.surface,
-            child: Padding(
-              padding: const EdgeInsets.only(top: 4),
-              child: SizedBox(
-                height: 42,
-                width: double.infinity,
-                child: TabBar(
-                  controller: _homeController.tabController,
-                  tabs: _homeController.tabs
-                      .map((e) => Tab(text: e.label))
-                      .toList(),
-                  isScrollable: true,
-                  dividerColor: Colors.transparent,
-                  dividerHeight: 0,
-                  splashBorderRadius: StyleString.mdRadius,
-                  tabAlignment: TabAlignment.center,
-                  onTap: (_) {
-                    feedBack();
-                    if (!_homeController.tabController.indexIsChanging) {
-                      _homeController.animateToTop();
-                    }
-                  },
-                ),
-              ),
-            ),
-          )
-        else
-          const SizedBox(height: 6),
+        const SizedBox(height: 6),
+        // 移除 Tab 栏和视频内容，显示空白占位区域
         Expanded(
-          child: tabBarView(
-            controller: _homeController.tabController,
-            children: _homeController.tabs.map((e) => e.page).toList(),
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.search,
+                  size: 64,
+                  color: theme.colorScheme.outline.withValues(alpha: 0.3),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  '使用上方搜索框搜索内容',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: theme.colorScheme.outline,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ],

@@ -26,10 +26,11 @@ class HomeController extends GetxController
   late final RxString defaultSearch = ''.obs;
   late int lateCheckSearchAt = 0;
 
-  ScrollOrRefreshMixin get controller => tabs[tabController.index].ctr();
+  // 由于已清空 tabs，创建一个空的 ScrollController
+  final ScrollController _scrollController = ScrollController();
 
   @override
-  ScrollController get scrollController => controller.scrollController;
+  ScrollController get scrollController => _scrollController;
 
   AccountService accountService = Get.find<AccountService>();
 
@@ -51,22 +52,18 @@ class HomeController extends GetxController
 
   @override
   Future<void> onRefresh() {
-    return controller.onRefresh().catchError((e) {
-      if (kDebugMode) debugPrint(e.toString());
-    });
+    // 由于已清空 tabs，不再需要刷新视频内容
+    return Future.value();
   }
 
   void setTabConfig() {
-    final tabs = GStorage.setting.get(SettingBoxKey.tabBarSort) as List?;
-    if (tabs != null) {
-      this.tabs = tabs.map((i) => HomeTabType.values[i]).toList();
-    } else {
-      this.tabs = HomeTabType.values;
-    }
+    // 清空所有 Tab，不再加载任何视频推荐内容
+    this.tabs = [];
 
+    // 创建一个空的 TabController，length 设为 1 避免崩溃
     tabController = TabController(
-      initialIndex: max(0, this.tabs.indexOf(HomeTabType.rcmd)),
-      length: this.tabs.length,
+      initialIndex: 0,
+      length: 1,
       vsync: this,
     );
   }
@@ -74,6 +71,7 @@ class HomeController extends GetxController
   @override
   void dispose() {
     tabController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
